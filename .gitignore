@@ -1,0 +1,5 @@
+kaggle.json
+data/
+df_cleaned.pkl
+faiss_index.pkl
+tfidf_matrix.pkl
