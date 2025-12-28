@@ -1,22 +1,11 @@
-# Core Data Processing
-numpy>=1.21.0
-pandas>=1.3.0
-
-# Machine Learning & NLP
-scikit-learn>=1.0.0
-nltk>=3.6.0
-faiss-cpu>=1.7.0
-
-# Visualization
-matplotlib>=3.4.0
-wordcloud>=1.8.0
-
-# Web Application
-streamlit>=1.0.0
-
-# Model Persistence
-joblib>=1.1.0
-
-# Kaggle API (for data download)
-kaggle>=1.5.0
-
+numpy
+pandas
+scikit-learn
+nltk
+faiss-cpu
+matplotlib
+wordcloud
+streamlit
+joblib
+kaggle
+huggingface_hub

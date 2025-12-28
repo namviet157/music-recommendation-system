@@ -1,6 +1,6 @@
 kaggle.json
 data/
-df_cleaned.pkl
-faiss_index.pkl
-tfidf_matrix.pkl
+df_cleaned.parquet
+faiss.index
+tfidf_matrix.npz
 __pycache__/
