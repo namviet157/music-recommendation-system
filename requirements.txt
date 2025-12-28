@@ -1,5 +1,7 @@
 numpy
 pandas
+pyarrow
+scipy
 scikit-learn
 nltk
 faiss-cpu

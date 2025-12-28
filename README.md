@@ -2,12 +2,16 @@
 
 A content-based music recommendation system that suggests similar songs by analyzing lyrics similarity. Built with TF-IDF vectorization and Facebook's FAISS library for efficient nearest-neighbor search.
 
+## Live Demo
+
+**Try it now:** [https://music-recommendation-system-mk7huqfthpgkbkpcdtafgj.streamlit.app/](https://music-recommendation-system-mk7huqfthpgkbkpcdtafgj.streamlit.app/)
+
 ## Features
 
 - **Lyrics-based similarity matching** - Find songs with similar lyrical content
 - **Fast search with FAISS indexing** - Instant recommendations from 57,000+ songs
 - **Interactive web interface** - User-friendly Streamlit application
-- **Pre-trained models** - Ready-to-use recommendation engine
+- **Cloud-hosted models** - Pre-trained models stored on Hugging Face Hub
 
 ## Demo
 
@@ -24,22 +28,26 @@ The web application allows you to:
 | **Text Processing** | NLTK, scikit-learn |
 | **Feature Extraction** | TF-IDF Vectorization |
 | **Similarity Search** | FAISS (Facebook AI Similarity Search) |
+| **Model Storage** | Hugging Face Hub |
+| **Deployment** | Streamlit Cloud |
 | **Data** | Spotify Million Song Dataset |
 
 ## Project Structure
 
 ```
-lyrics-based-music-recommender/
-├── app.py                          # Streamlit web application
-├── recommend.py                    # Recommendation logic module
+music-recommendation-system/
+├── app.py                             # Streamlit web application
+├── recommend.py                       # Recommendation logic module
 ├── Music_Recommendation_System.ipynb  # Training notebook
-├── requirements.txt                # Python dependencies
-├── data/
-│   └── spotify_millsongdata.csv   # Dataset (download required)
-├── df_cleaned.pkl                  # Preprocessed DataFrame
-├── faiss_index.pkl                 # FAISS index for similarity search
-└── tfidf_matrix.pkl                # TF-IDF vectors
+├── requirements.txt                   # Python dependencies
+└── data/
+    └── spotify_millsongdata.csv       # Dataset (download required)
 ```
+
+**Model files (hosted on Hugging Face Hub):**
+- `df_cleaned.parquet` - Preprocessed DataFrame
+- `faiss.index` - FAISS index for similarity search  
+- `tfidf_matrix.npz` - TF-IDF sparse matrix
 
 ## Getting Started
 
@@ -72,25 +80,15 @@ lyrics-based-music-recommender/
    pip install -r requirements.txt
    ```
 
-4. **Download NLTK data**
-   ```python
-   import nltk
-   nltk.download('punkt')
-   nltk.download('stopwords')
-   nltk.download('punkt_tab')
-   ```
-
 ### Running the Application
 
-#### Option 1: Use Pre-trained Models (Recommended)
-
-If you have the pre-trained model files (`df_cleaned.pkl`, `faiss_index.pkl`, `tfidf_matrix.pkl`):
+#### Option 1: Run Locally (Models auto-download from Hugging Face)
 
 ```bash
 streamlit run app.py
 ```
 
-The app will open in your browser at `http://localhost:8501`
+The app will automatically download pre-trained models from [Hugging Face Hub](https://huggingface.co/namviet157/music-recommendation) and open in your browser at `http://localhost:8501`
 
 #### Option 2: Train from Scratch
 
@@ -108,7 +106,7 @@ The app will open in your browser at `http://localhost:8501`
    streamlit run app.py
    ```
 
-## 📖 How It Works
+## How It Works
 
 ### 1. Text Preprocessing
 - Remove special characters and convert to lowercase
@@ -158,3 +156,9 @@ Returns similar songs based on lyrics.
 
 **Returns:**
 - DataFrame with columns: `song`, `artist`
+
+## Resources
+
+- **Hugging Face Models**: [namviet157/music-recommendation](https://huggingface.co/namviet157/music-recommendation)
+- **Live App**: [Streamlit Cloud](https://music-recommendation-system-mk7huqfthpgkbkpcdtafgj.streamlit.app/)
+- **Dataset**: [Kaggle - Spotify Million Song Dataset](https://www.kaggle.com/datasets/notshrirang/spotify-million-song-dataset)
