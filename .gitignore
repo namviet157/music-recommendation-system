@@ -1,6 +1,5 @@
 kaggle.json
 data/
-df_cleaned.parquet
-faiss.index
-tfidf_matrix.npz
 __pycache__/
+.vscode/
+models/
