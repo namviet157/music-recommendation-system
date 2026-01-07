@@ -11,3 +11,8 @@ streamlit
 joblib
 kaggle
 huggingface_hub
+transformers
+sentence-transformers
+gensim
+tqdm
+ipywidgets

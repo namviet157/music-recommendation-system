@@ -19,11 +19,11 @@ def load_models():
     tfidf_index_path = hf_hub_download(repo_id=REPO_ID, filename="faiss_tfidf.index")
     
     # FastText
-    fasttext_emb_path = hf_hub_download(repo_id=REPO_ID, filename="embeddings_fasttext.npy")
+    fasttext_emb_path = hf_hub_download(repo_id=REPO_ID, filename="embeddings_fasttext.npz")
     fasttext_index_path = hf_hub_download(repo_id=REPO_ID, filename="faiss_fasttext.index")
     
     # Word2Vec
-    w2v_emb_path = hf_hub_download(repo_id=REPO_ID, filename="embeddings_w2v.npy")
+    w2v_emb_path = hf_hub_download(repo_id=REPO_ID, filename="embeddings_w2v.npz")
     w2v_index_path = hf_hub_download(repo_id=REPO_ID, filename="faiss_w2v.index")
 
     # Load DataFrame
@@ -35,11 +35,11 @@ def load_models():
     X_tfidf = normalize(X_tfidf, norm="l2")
     
     # Load FastText embeddings and normalize
-    X_fasttext = np.load(fasttext_emb_path).astype('float32')
+    X_fasttext = np.load(fasttext_emb_path)["arr_0"].astype('float32')
     X_fasttext = normalize(X_fasttext, norm="l2")
     
     # Load Word2Vec embeddings and normalize
-    X_w2v = np.load(w2v_emb_path).astype('float32')
+    X_w2v = np.load(w2v_emb_path)["arr_0"].astype('float32')
     X_w2v = normalize(X_w2v, norm="l2")
     
     # Load FAISS indexes
