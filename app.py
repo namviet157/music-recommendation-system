@@ -1,4 +1,4 @@
-from recommender import recommend_songs, compare_models, df, models
+from recommender import recommend_songs, compare_models, get_df, get_models
 import streamlit as st
 import pandas as pd
 
@@ -86,6 +86,7 @@ with st.sidebar:
     """)
 
 # Main content
+df = get_df()
 song_list = sorted(df['song'].dropna().unique())
 
 col1, col2 = st.columns([3, 1])
@@ -113,6 +114,7 @@ if st.button("🔍 Get Recommendations", type="primary"):
         
         # Create columns for each model
         cols = st.columns(3)
+        models = get_models()
         
         for i, (model_key, model_info) in enumerate(models.items()):
             with cols[i]:
@@ -145,6 +147,7 @@ if st.button("🔍 Get Recommendations", type="primary"):
         st.markdown("---")
         st.subheader(f"🎯 Recommendations using {model_options[selected_model]}")
         
+        models = get_models()
         with st.spinner(f"Finding similar songs with {models[selected_model]['name']}..."):
             recommendations = recommend_songs(selected_song, selected_model, top_k=top_k)
         
@@ -163,11 +166,11 @@ if st.button("🔍 Get Recommendations", type="primary"):
                         📈 Similarity: `{row['similarity']:.2%}`
                         """)
                     
-                    # with col2:
-                    #     st.link_button("🟢 Spotify", row['spotify_url'], width="stretch")
+                    with col2:
+                        st.link_button("🟢 Spotify", row['spotify_url'], width="stretch")
                     
-                    # with col3:
-                    #     st.link_button("🔴 YouTube", row['youtube_url'], width="stretch")
+                    with col3:
+                        st.link_button("🔴 YouTube", row['youtube_url'], width="stretch")
                     
                     st.divider()
             

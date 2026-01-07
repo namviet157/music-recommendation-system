@@ -7,7 +7,7 @@ nltk
 faiss-cpu
 matplotlib
 wordcloud
-streamlit
+streamlit>=1.39.0
 joblib
 kaggle
 huggingface_hub
