@@ -16,3 +16,4 @@ sentence-transformers
 gensim
 tqdm
 ipywidgets
+spotipy

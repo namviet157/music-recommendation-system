@@ -163,11 +163,11 @@ if st.button("🔍 Get Recommendations", type="primary"):
                         📈 Similarity: `{row['similarity']:.2%}`
                         """)
                     
-                    with col2:
-                        st.link_button("🟢 Spotify", row['spotify_url'], width="stretch")
+                    # with col2:
+                    #     st.link_button("🟢 Spotify", row['spotify_url'], width="stretch")
                     
-                    with col3:
-                        st.link_button("🔴 YouTube", row['youtube_url'], width="stretch")
+                    # with col3:
+                    #     st.link_button("🔴 YouTube", row['youtube_url'], width="stretch")
                     
                     st.divider()
             
