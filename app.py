@@ -141,9 +141,9 @@ if st.button("🔍 Get Recommendations", type="primary"):
                         # Music links
                         link_cols = st.columns(2)
                         with link_cols[0]:
-                            st.link_button("🟢 Spotify", row['spotify_url'], use_container_width=True)
+                            st.link_button("🟢 Spotify", row['spotify_url'], width="stretch")
                         with link_cols[1]:
-                            st.link_button("🔴 YouTube", row['youtube_url'], use_container_width=True)
+                            st.link_button("🔴 YouTube", row['youtube_url'], width="stretch")
                         st.markdown("")
     
     else:
@@ -170,10 +170,10 @@ if st.button("🔍 Get Recommendations", type="primary"):
                         """)
                     
                     with col2:
-                        st.link_button("🟢 Spotify", row['spotify_url'], use_container_width=True)
+                        st.link_button("🟢 Spotify", row['spotify_url'], width="stretch")
                     
                     with col3:
-                        st.link_button("🔴 YouTube", row['youtube_url'], use_container_width=True)
+                        st.link_button("🔴 YouTube", row['youtube_url'], width="stretch")
                     
                     st.divider()
             
@@ -181,7 +181,7 @@ if st.button("🔍 Get Recommendations", type="primary"):
             with st.expander("📋 View as Table"):
                 display_df = recommendations[['song', 'artist', 'similarity']].copy()
                 display_df['similarity'] = display_df['similarity'].apply(lambda x: f"{x:.2%}")
-                st.dataframe(display_df, use_container_width=True, hide_index=True)
+                st.dataframe(display_df, width="stretch", hide_index=True)
 
 # Footer
 st.markdown("---")
