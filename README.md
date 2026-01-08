@@ -4,7 +4,7 @@ A content-based music recommendation system that suggests similar songs by analy
 
 ## Live Demo
 
-**Try it now:** [https://music-recommendation-system-mk7huqfthpgkbkpcdtafgj.streamlit.app/](https://music-recommendation-system-mk7huqfthpgkbkpcdtafgj.streamlit.app/)
+**Try it now:** [https://huggingface.co/spaces/namviet157/music-recommendation-system](https://huggingface.co/spaces/namviet157/music-recommendation-system)
 
 ## Features
 

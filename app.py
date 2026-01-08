@@ -1,12 +1,15 @@
-from recommender import recommend_songs, compare_models, get_df, get_models
 import streamlit as st
 import pandas as pd
 
+# Set page config FIRST before importing modules with cache decorators
 st.set_page_config(
     page_title="Music Recommender",
-    page_icon="🎵",
+    page_icon=None,
     layout="wide"
 )
+
+# Import after page config is set
+from recommender import recommend_songs, compare_models, get_df, get_model
 
 # Custom CSS for better styling
 st.markdown("""
@@ -45,18 +48,19 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
-st.title("🎵 Music Recommendation System")
+st.title("Music Recommendation System")
 st.markdown("### Find similar songs using different AI models")
 
 # Sidebar for settings
 with st.sidebar:
-    st.header("⚙️ Settings")
+    st.header("Settings")
     
-    # Model selection
+    # Model selection (now includes SBERT)
     model_options = {
-        'tfidf': '📊 TF-IDF (Baseline)',
-        'fasttext': '🚀 FastText (Semantic)',
-        'w2v': '🧠 Word2Vec (Pre-trained)'
+        'tfidf': 'TF-IDF (Baseline)',
+        'fasttext': 'FastText (Semantic)',
+        'w2v': 'Word2Vec (Custom-trained)',
+        'sbert': 'SBERT (Contextual)'
     }
     
     mode = st.radio(
@@ -78,45 +82,59 @@ with st.sidebar:
     st.markdown("""
     **Model Descriptions:**
     
-    📊 **TF-IDF**: Term frequency baseline, good for exact word matching
+    **TF-IDF**: Term frequency baseline, good for exact word matching
     
-    🚀 **FastText**: Custom-trained on lyrics, handles slang & misspellings
+    **FastText**: Custom-trained on lyrics, handles slang & misspellings
     
-    🧠 **Word2Vec**: Pre-trained on Google News, captures general semantics
+    **Word2Vec**: Trained directly on lyrics dataset, captures semantic relationships
+    
+    **SBERT**: Sentence-BERT, captures full sentence context and word order
     """)
 
-# Main content
-df = get_df()
-song_list = sorted(df['song'].dropna().unique())
+# Main content - Cache song list to avoid recomputing
+@st.cache_data
+def get_song_list():
+    """Get sorted list of songs (cached)."""
+    df_local = get_df()
+    return sorted(df_local['song'].dropna().unique())
+
+# Load data with error handling
+try:
+    df = get_df()
+    song_list = get_song_list()
+except Exception as e:
+    st.error(f"Error initializing app: {e}")
+    st.stop()
 
 col1, col2 = st.columns([3, 1])
 with col1:
     selected_song = st.selectbox(
-        "🎤 Select a song:",
+        "Select a song:",
         song_list,
         index=0,
         help="Choose a song to find similar recommendations"
     )
 
 # Get song info
-song_info = df[df['song'] == selected_song].iloc[0]
-st.markdown(f"**Selected:** *{selected_song}* by **{song_info['artist']}**")
+if selected_song:
+    song_info = df[df['song'] == selected_song].iloc[0]
+    st.markdown(f"**Selected:** *{selected_song}* by **{song_info['artist']}**")
 
-if st.button("🔍 Get Recommendations", type="primary"):
+if st.button("Get Recommendations", type="primary"):
     
     if mode == "Compare All Models":
         # Compare all models
         st.markdown("---")
-        st.subheader("📊 Model Comparison")
+        st.subheader("Model Comparison")
         
         with st.spinner("Analyzing with all models..."):
             all_results = compare_models(selected_song, top_k=top_k)
         
-        # Create columns for each model
-        cols = st.columns(3)
-        models = get_models()
+        # Create columns for each model (now including SBERT)
+        cols = st.columns(4)
+        model_keys = ['tfidf', 'fasttext', 'w2v', 'sbert']
         
-        for i, (model_key, model_info) in enumerate(models.items()):
+        for i, model_key in enumerate(model_keys):
             with cols[i]:
                 st.markdown(f"### {model_options[model_key]}")
                 
@@ -128,8 +146,8 @@ if st.button("🔍 Get Recommendations", type="primary"):
                     for _, row in results.iterrows():
                         st.markdown(f"""
                         <div class="song-card">
-                            <strong>🎵 {row['song']}</strong><br>
-                            <small>👤 {row['artist']}</small><br>
+                            <strong>{row['song']}</strong><br>
+                            <small>{row['artist']}</small><br>
                             <span class="similarity-badge">Similarity: {row['similarity']:.2%}</span>
                         </div>
                         """, unsafe_allow_html=True)
@@ -137,18 +155,19 @@ if st.button("🔍 Get Recommendations", type="primary"):
                         # Music links
                         link_cols = st.columns(2)
                         with link_cols[0]:
-                            st.link_button("🟢 Spotify", row['spotify_url'], width="stretch")
+                            st.link_button("Spotify", row['spotify_url'])
                         with link_cols[1]:
-                            st.link_button("🔴 YouTube", row['youtube_url'], width="stretch")
+                            st.link_button("YouTube", row['youtube_url'])
                         st.markdown("")
     
     else:
         # Single model
         st.markdown("---")
-        st.subheader(f"🎯 Recommendations using {model_options[selected_model]}")
+        st.subheader(f"Recommendations using {model_options[selected_model]}")
         
-        models = get_models()
-        with st.spinner(f"Finding similar songs with {models[selected_model]['name']}..."):
+        # Get model info for display (lazy loaded)
+        model = get_model(selected_model)
+        with st.spinner(f"Finding similar songs with {model['name']}..."):
             recommendations = recommend_songs(selected_song, selected_model, top_k=top_k)
         
         if isinstance(recommendations, str):
@@ -161,21 +180,21 @@ if st.button("🔍 Get Recommendations", type="primary"):
                     
                     with col1:
                         st.markdown(f"""
-                        **{idx + 1}. 🎵 {row['song']}**  
-                        👤 *{row['artist']}*  
-                        📈 Similarity: `{row['similarity']:.2%}`
+                        **{idx + 1}. {row['song']}**  
+                        *{row['artist']}*  
+                        Similarity: `{row['similarity']:.2%}`
                         """)
                     
                     with col2:
-                        st.link_button("🟢 Spotify", row['spotify_url'], width="stretch")
+                        st.link_button("Spotify", row['spotify_url'])
                     
                     with col3:
-                        st.link_button("🔴 YouTube", row['youtube_url'], width="stretch")
+                        st.link_button("YouTube", row['youtube_url'])
                     
                     st.divider()
             
             # Show data table
-            with st.expander("📋 View as Table"):
+            with st.expander("View as Table"):
                 display_df = recommendations[['song', 'artist', 'similarity']].copy()
                 display_df['similarity'] = display_df['similarity'].apply(lambda x: f"{x:.2%}")
                 st.dataframe(display_df, width="stretch", hide_index=True)
@@ -185,7 +204,7 @@ st.markdown("---")
 st.markdown("""
 <div style='text-align: center; color: #888;'>
     <small>
-        🎵 Music Recommendation System | 
+        Music Recommendation System | 
         Built with Streamlit & FAISS | 
         Data: Spotify Million Song Dataset
     </small>

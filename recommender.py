@@ -51,26 +51,28 @@ def load_model(model_type: str):
         
         return {'X': X_w2v, 'index': index_w2v, 'name': 'Word2Vec'}
     
+    elif model_type == 'sbert':
+        # Sentence-BERT embeddings (contextual, 384-dim)
+        sbert_emb_path = hf_hub_download(repo_id=REPO_ID, filename="embeddings_sbert.npz")
+        sbert_index_path = hf_hub_download(repo_id=REPO_ID, filename="faiss_sbert.index")
+        
+        X_sbert = np.load(sbert_emb_path)["arr_0"].astype('float32')
+        X_sbert = normalize(X_sbert, norm="l2")
+        index_sbert = faiss.read_index(sbert_index_path)
+        
+        return {'X': X_sbert, 'index': index_sbert, 'name': 'SBERT'}
+    
     else:
         raise ValueError(f"Unknown model type: {model_type}")
 
-@st.cache_resource
-def get_all_models():
-    """Get all models dictionary (cached)."""
-    return {
-        'tfidf': load_model('tfidf'),
-        'fasttext': load_model('fasttext'),
-        'w2v': load_model('w2v')
-    }
-
 # Public API functions
 def get_df():
-    """Get DataFrame (cached)."""
+    """Get DataFrame (cached via load_dataframe)."""
     return load_dataframe()
 
-def get_models():
-    """Get models dictionary (cached)."""
-    return get_all_models()
+def get_model(model_type: str):
+    """Get a single model (cached). More memory efficient - use this for single model access."""
+    return load_model(model_type)
 
 
 def get_spotify_search_url(song: str, artist: str) -> str:
@@ -87,9 +89,11 @@ def get_youtube_search_url(song: str, artist: str) -> str:
     return f"https://www.youtube.com/results?search_query={encoded_query}"
 
 
+@st.cache_data
 def recommend_songs(song_name: str, model_type: str = 'tfidf', df=None, top_k: int = 5):
     """
     Recommend similar songs using specified model.
+    Uses @st.cache_data to cache results for same inputs.
     
     Args:
         song_name: Name of the song to find similar songs for
@@ -103,10 +107,13 @@ def recommend_songs(song_name: str, model_type: str = 'tfidf', df=None, top_k: i
     if df is None:
         df = get_df()
     
-    models = get_models()
+    # Load only the specific model needed (lazy loading with caching)
+    valid_models = ['tfidf', 'fasttext', 'w2v', 'sbert']
+    if model_type not in valid_models:
+        return f"Invalid model type. Choose from: {valid_models}"
     
-    if model_type not in models:
-        return f"Invalid model type. Choose from: {list(models.keys())}"
+    # Load the specific model (cached via @st.cache_resource in load_model)
+    model = get_model(model_type)
     
     # Find song index
     idx = df[df['song'].str.lower() == song_name.lower()].index
@@ -115,8 +122,8 @@ def recommend_songs(song_name: str, model_type: str = 'tfidf', df=None, top_k: i
     idx = idx[0]
     
     # Get model components
-    X = models[model_type]['X']
-    index = models[model_type]['index']
+    X = model['X']
+    index = model['index']
     
     # Query FAISS index
     query = X[idx].reshape(1, -1).astype('float32')
@@ -138,19 +145,21 @@ def recommend_songs(song_name: str, model_type: str = 'tfidf', df=None, top_k: i
     return results.reset_index(drop=True)
 
 
+@st.cache_data
 def compare_models(song_name: str, df=None, top_k: int = 5):
     """
     Compare recommendations from all models for a song.
+    Uses @st.cache_data to cache results.
     
     Returns:
         Dictionary with results from each model
     """
     if df is None:
         df = get_df()
-    models = get_models()
     
+    valid_models = ['tfidf', 'fasttext', 'w2v', 'sbert']
     results = {}
-    for model_type in models.keys():
+    for model_type in valid_models:
         results[model_type] = recommend_songs(song_name, model_type, df, top_k)
     return results
 
