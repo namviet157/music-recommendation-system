@@ -16,15 +16,35 @@ st.markdown("""
 <style>
     .stButton > button {
         width: 100%;
-        background: linear-gradient(90deg, #1DB954, #191414);
-        color: white;
         border: none;
-        padding: 0.5rem 1rem;
-        border-radius: 25px;
-        font-weight: bold;
+        padding: 0.6rem 1.2rem;
+        border-radius: 8px;
+        font-weight: 600;
+        font-size: 0.95rem;
+        transition: all 0.3s ease;
+        cursor: pointer;
     }
     .stButton > button:hover {
-        background: linear-gradient(90deg, #1ed760, #282828);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+    /* Primary button (Spotify) - emerald green */
+    .stButton > button[kind="primary"] {
+        background: linear-gradient(135deg, #2ECC71 0%, #27AE60 100%) !important;
+        color: white !important;
+    }
+    .stButton > button[kind="primary"]:hover {
+        background: linear-gradient(135deg, #27AE60 0%, #2ECC71 100%) !important;
+        box-shadow: 0 4px 12px rgba(46, 204, 113, 0.4) !important;
+    }
+    /* Secondary button (YouTube) - ruby red */
+    .stButton > button[kind="secondary"] {
+        background: linear-gradient(135deg, #E63946 0%, #C1121F 100%) !important;
+        color: white !important;
+    }
+    .stButton > button[kind="secondary"]:hover {
+        background: linear-gradient(135deg, #EF233C 0%, #E63946 100%) !important;
+        box-shadow: 0 4px 12px rgba(230, 57, 70, 0.4) !important;
     }
     .song-card {
         background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
@@ -155,9 +175,9 @@ if st.button("Get Recommendations", type="primary"):
                         # Music links
                         link_cols = st.columns(2)
                         with link_cols[0]:
-                            st.link_button("Spotify", row['spotify_url'])
+                            st.link_button("🎵 Spotify", row['spotify_url'], type="primary")
                         with link_cols[1]:
-                            st.link_button("YouTube", row['youtube_url'])
+                            st.link_button("▶️ YouTube", row['youtube_url'], type="secondary")
                         st.markdown("")
     
     else:
@@ -186,10 +206,10 @@ if st.button("Get Recommendations", type="primary"):
                         """)
                     
                     with col2:
-                        st.link_button("Spotify", row['spotify_url'])
+                        st.link_button("🎵 Spotify", row['spotify_url'], type="primary")
                     
                     with col3:
-                        st.link_button("YouTube", row['youtube_url'])
+                        st.link_button("▶️ YouTube", row['youtube_url'], type="secondary")
                     
                     st.divider()
             
@@ -197,16 +217,4 @@ if st.button("Get Recommendations", type="primary"):
             with st.expander("View as Table"):
                 display_df = recommendations[['song', 'artist', 'similarity']].copy()
                 display_df['similarity'] = display_df['similarity'].apply(lambda x: f"{x:.2%}")
-                st.dataframe(display_df, width="stretch", hide_index=True)
-
-# Footer
-st.markdown("---")
-st.markdown("""
-<div style='text-align: center; color: #888;'>
-    <small>
-        Music Recommendation System | 
-        Built with Streamlit & FAISS | 
-        Data: Spotify Million Song Dataset
-    </small>
-</div>
-""", unsafe_allow_html=True)
+                st.dataframe(display_df, hide_index=True)
