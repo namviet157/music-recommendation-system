@@ -25,6 +25,8 @@ The web application allows you to:
 4. Click "Get Recommendations" to see similar songs
 5. View results with similarity scores and direct links to Spotify and YouTube
 
+<img width="1824" height="884" alt="image" src="https://github.com/user-attachments/assets/96a73e10-ec08-495a-b3f3-105d00a9fc8b" />
+
 
 ## Tech Stack
 
